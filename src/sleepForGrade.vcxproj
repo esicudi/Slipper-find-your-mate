@@ -156,8 +156,8 @@
     <None Include="..\bin\shaders\sleepForGrade.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\bin\shaders\main.cpp" />
     <ClCompile Include="gl\glad\glad.c" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
