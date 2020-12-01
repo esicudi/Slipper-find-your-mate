@@ -24,6 +24,9 @@
     <ClInclude Include="stb_image.h">
       <Filter>Header files</Filter>
     </ClInclude>
+    <ClInclude Include="stb_truetype.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\shaders\sleepForGrade.vert">
@@ -32,12 +35,21 @@
     <None Include="..\bin\shaders\sleepForGrade.frag">
       <Filter>Shader files</Filter>
     </None>
+    <None Include="..\bin\shaders\text.vert">
+      <Filter>Shader files</Filter>
+    </None>
+    <None Include="..\bin\shaders\text.frag">
+      <Filter>Shader files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gl\glad\glad.c">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="text.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>

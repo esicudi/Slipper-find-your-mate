@@ -5,7 +5,7 @@
 
 //************************************
 // global constants
-static const char*	window_name = "Sleep For Grade";
+static const char*	window_name = "Escape!";
 static const char*	vert_shader_path = "../bin/shaders/sleepForGrade.vert";
 static const char*	frag_shader_path = "../bin/shaders/sleepForGrade.frag";
 
@@ -57,6 +57,7 @@ int		frame = 0;
 int		mode = 0;
 float	t0 = 0.0f;
 float	t1 = 0.0f;
+float	a = 0.0f;
 bool	b_pause = false;
 
 //************************************
@@ -69,6 +70,11 @@ material_t	material;
 // holder of vertices and indices of a unit circle
 std::vector<vertex>		vertices;
 
+//*******************************************************************
+// forward declarations for freetype text
+bool init_text();
+void render_text(std::string text, GLint x, GLint y, GLfloat scale, vec4 color, GLfloat dpi_scale = 1.0f);
+
 //************************************
 void update()
 {
@@ -80,6 +86,7 @@ void update()
 	t1 = float(glfwGetTime()) - t0;
 	t0 = float(glfwGetTime());
 	if (b_pause)	t1 = 0.0f;
+	a = abs(sin(float(glfwGetTime()) * 2.5f));
 
 	// update uniform variables in vertex/fragment shaders
 	GLint	uloc;
@@ -109,6 +116,14 @@ void render()
 
 	// bind vertex array object
 	glBindVertexArray(vertex_array);
+
+	// render texts
+	float dpi_scale = cg_get_dpi_scale();
+	render_text("Hello text!", 100, 100, 1.0f, vec4(0.5f, 0.8f, 0.2f, 1.0f), dpi_scale);
+	render_text("I love Computer Graphics!", 100, 125, 0.5f, vec4(0.7f, 0.4f, 0.1f, 0.8f), dpi_scale);
+	render_text("Blinking text here", 100, 155, 0.6f, vec4(0.5f, 0.7f, 0.7f, a), dpi_scale);
+
+	glfwSwapBuffers(window);
 }
 
 void reshape(GLFWwindow* window, int width, int height)
@@ -117,7 +132,7 @@ void reshape(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-// text
+//text
 
 // create vertices
 
@@ -151,12 +166,17 @@ bool user_init()
 	// init GL states
 	glLineWidth(1.0f);
 	glClearColor(39 / 255.0f, 40 / 255.0f, 34 / 255.0f, 1.0f);
+	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// define the position of four corner vertices
 
 	// create vertex buffer
+
+	// setup freetype
+	if (!init_text()) return false;
 
 	t0 = float(glfwGetTime());
 
