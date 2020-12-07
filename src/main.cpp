@@ -12,6 +12,8 @@
 static const char* window_name = "Slipper, find your mate!";
 static const char* vert_shader_path = "../bin/shaders/sleepForGrade.vert";
 static const char* frag_shader_path = "../bin/shaders/sleepForGrade.frag";
+static const char* fly_mp3_path = "../bin/sounds/fly.mp3";
+static const char* end_mp3_path = "../bin/sounds/end.mp3";
 
 //************************************
 // common structures
@@ -62,6 +64,7 @@ GLuint	foot_vertex_array = 0;
 // irrKlang objects
 irrklang::ISoundEngine* engine;
 irrklang::ISoundSource* fly_mp3_src = nullptr;
+irrklang::ISoundSource* end_mp3_src = nullptr;
 
 //************************************
 // global variables
@@ -254,6 +257,7 @@ void render()
 						{
 							b_end = true;
 							b_start = false;
+							engine->play2D(end_mp3_src, false, false);
 						}
 					}
 				}
@@ -316,6 +320,7 @@ void collision()
 					t += t1;
 					s.psi = t;
 					s.center.z = 3.2f;
+					engine->play2D(fly_mp3_src, false, false);
 					return;
 				}
 			}
@@ -1032,6 +1037,17 @@ bool user_init()
 	create_slipper_buffer(unit_slipper_vertices);
 	create_foot_buffer(unit_foot_vertices);
 
+	engine = irrklang::createIrrKlangDevice();
+	if (!engine) return false;
+
+	//add sound source from the sound file
+	fly_mp3_src = engine->addSoundSourceFromFile(fly_mp3_path);
+	end_mp3_src = engine->addSoundSourceFromFile(end_mp3_path);
+
+	//set default volume
+	fly_mp3_src->setDefaultVolume(0.5f);
+	end_mp3_src->setDefaultVolume(1.0f);
+
 	// setup freetype
 	if (!init_text()) return false;
 
@@ -1042,6 +1058,7 @@ bool user_init()
 
 void user_finalize()
 {
+	engine->drop();
 }
 
 int main(int argc, char* argv[])
