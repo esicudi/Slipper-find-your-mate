@@ -27,6 +27,15 @@
     <ClInclude Include="stb_truetype.h">
       <Filter>Header files</Filter>
     </ClInclude>
+    <ClInclude Include="foot.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="slipper.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\shaders\sleepForGrade.vert">

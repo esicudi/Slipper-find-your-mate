@@ -149,6 +149,9 @@
   <ItemGroup>
     <ClInclude Include="cgmath.h" />
     <ClInclude Include="cgut.h" />
+    <ClInclude Include="foot.h" />
+    <ClInclude Include="map.h" />
+    <ClInclude Include="slipper.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_truetype.h" />
   </ItemGroup>
