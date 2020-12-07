@@ -14,6 +14,10 @@ static const char* vert_shader_path = "../bin/shaders/sleepForGrade.vert";
 static const char* frag_shader_path = "../bin/shaders/sleepForGrade.frag";
 static const char* fly_mp3_path = "../bin/sounds/fly.mp3";
 static const char* end_mp3_path = "../bin/sounds/end.mp3";
+static const char* fall_mp3_path = "../bin/sounds/fall.mp3";
+static const char* clock_mp3_path = "../bin/sounds/clock2.mp3";
+static const char* start_mp3_path = "../bin/sounds/start.mp3";
+static const char* mode_mp3_path = "../bin/sounds/mode.mp3";
 
 //************************************
 // common structures
@@ -65,6 +69,10 @@ GLuint	foot_vertex_array = 0;
 irrklang::ISoundEngine* engine;
 irrklang::ISoundSource* fly_mp3_src = nullptr;
 irrklang::ISoundSource* end_mp3_src = nullptr;
+irrklang::ISoundSource* fall_mp3_src = nullptr;
+irrklang::ISoundSource* clock_mp3_src = nullptr;
+irrklang::ISoundSource* start_mp3_src = nullptr;
+irrklang::ISoundSource* mode_mp3_src = nullptr;
 
 //************************************
 // global variables
@@ -116,6 +124,7 @@ void fly(slipper_t& s)
 		s.v = vec2(0.0f);
 		b_fly = false;
 		s.psi = 0.0f;
+		engine->play2D(fall_mp3_src, false, false);
 		//engine->stopAllSoundsOfSoundSource(fly_mp3_src);
 	}
 	else
@@ -168,14 +177,14 @@ void render()
 	// starting
 	if (!b_start && !b_end)
 	{
-		render_text("Slipper, find your mate!", 100, 100, 1.0f, vec4(0.5f, 0.8f, 0.2f, 1.0f), dpi_scale);
+		render_text("Slipper, find your mate!", 130, 130, 1.8f, vec4(0.5f, 0.8f, 0.2f, 1.0f), dpi_scale);
 		std::string str = "mode: < ";
 		str.push_back(48 + mode);
 		str.push_back(' ');
 		str.push_back('>');
-		render_text(str, 100, 125, 0.5f, vec4(0.7f, 0.4f, 0.1f, 0.8f), dpi_scale);
-		render_text("Press buttun 'S' to start.", 100, 155, 0.6f, vec4(0.5f, 0.7f, 0.7f, a), dpi_scale);
-		render_text("Press buttun 'ESC' to end game.", 100, 175, 0.6f, vec4(0.5f, 0.7f, 0.7f, a), dpi_scale);
+		render_text(str, 350, 350, 1.0f, vec4(0.7f, 0.4f, 0.1f, 0.8f), dpi_scale);
+		render_text("Press buttun 'S' to start.", 310, 400, 0.6f, vec4(0.5f, 0.7f, 0.7f, a), dpi_scale);
+		render_text("Exit game : 'ESC'", 340, 450, 0.6f, vec4(0.5f, 0.7f, 0.7f, 0.8f), dpi_scale);
 	}
 
 	// end
@@ -183,9 +192,9 @@ void render()
 	{
 		std::string str = "Play time: ";
 		std::string str1 = std::to_string((int)t_play);
-		render_text(str + str1 + "sec", 100, 100, 1.5f, vec4(1.0f, 1.0f, 1.0f, 1.0f), dpi_scale);
-		render_text("Press buttun 'S' to go to start buttun.", 100, 155, 0.6f, vec4(0.5f, 0.7f, 0.7f, a), dpi_scale);
-		render_text("Press buttun 'ESC' to end game.", 100, 175, 0.6f, vec4(0.5f, 0.7f, 0.7f, a), dpi_scale);
+		render_text(str + str1 + "sec", 250, 300, 2.0f, vec4(1.0f, 1.0f, 1.0f, 1.0f), dpi_scale);
+		render_text("Return to starting scene: 'S'", 300, 355, 0.6f, vec4(0.7f, 0.6f, 0.9f, 0.8), dpi_scale);
+		render_text("Exit game: 'ESC'", 350, 385, 0.6f, vec4(0.7f, 0.6f, 0.9f, 0.8), dpi_scale);
 	}
 
 	// play
@@ -257,7 +266,9 @@ void render()
 						{
 							b_end = true;
 							b_start = false;
+							engine->stopAllSounds();
 							engine->play2D(end_mp3_src, false, false);
+							engine->play2D(start_mp3_src, true, false);
 						}
 					}
 				}
@@ -977,12 +988,12 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 		if (key == GLFW_KEY_LEFT)
 		{
 			b.left = true;
-			if (!b_start) { if (mode > 1) mode--; b.left = false; }
+			if (!b_start && !b_end) { if (mode > 1) mode--; b.left = false; engine->play2D(mode_mp3_src, false, false);}
 		}
 		if (key == GLFW_KEY_RIGHT)
 		{
 			b.right = true;
-			if (!b_start) { if (mode < 9) mode++; b.right = false; }
+			if (!b_start && !b_end) { if (mode < 9) mode++; b.right = false; engine->play2D(mode_mp3_src, false, false); }
 		}
 		else if (key == GLFW_KEY_S)
 		{
@@ -990,6 +1001,8 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
 			else if (!b_start)
 			{
 				b_start = true; t_play = 0.0f; foots = std::move(create_foots(mode)); slippers = std::move(create_slippers());
+				engine->stopAllSounds();
+				engine->play2D(clock_mp3_src, true, false);
 			}
 		}
 		else if (key == GLFW_KEY_R)	b_reset = true;
@@ -1043,10 +1056,20 @@ bool user_init()
 	//add sound source from the sound file
 	fly_mp3_src = engine->addSoundSourceFromFile(fly_mp3_path);
 	end_mp3_src = engine->addSoundSourceFromFile(end_mp3_path);
+	fall_mp3_src = engine->addSoundSourceFromFile(fall_mp3_path);
+	clock_mp3_src = engine->addSoundSourceFromFile(clock_mp3_path);
+	start_mp3_src = engine->addSoundSourceFromFile(start_mp3_path);
+	mode_mp3_src = engine->addSoundSourceFromFile(mode_mp3_path);
 
 	//set default volume
 	fly_mp3_src->setDefaultVolume(0.5f);
 	end_mp3_src->setDefaultVolume(1.0f);
+	fall_mp3_src->setDefaultVolume(0.05f);
+	clock_mp3_src->setDefaultVolume(0.3f);
+	start_mp3_src->setDefaultVolume(0.7f);
+	mode_mp3_src->setDefaultVolume(0.7f);
+
+	engine->play2D(start_mp3_src, true, false);
 
 	// setup freetype
 	if (!init_text()) return false;

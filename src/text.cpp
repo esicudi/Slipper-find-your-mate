@@ -9,7 +9,7 @@ stbtt_fontinfo font_info;
 GLuint		VAO;			// vertex array for text objects
 GLuint		program_text;	// GPU program for text render
 
-static const char* font_path = "../bin/fonts/consola.ttf";				// from Windows/font/
+static const char* font_path = "../bin/fonts/comic.ttf";				// from Windows/font/
 static const char* vert_text_path = "../bin/shaders/text.vert";		// text vertex shaders
 static const char* frag_text_path = "../bin/shaders/text.frag";		// text fragment shaders
 
